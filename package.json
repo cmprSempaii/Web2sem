@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@umijs/max": "^4.6.29"
+  }
+}
