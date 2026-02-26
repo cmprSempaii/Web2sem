@@ -53,7 +53,7 @@ const HomePage = () => {
               fontSize: '18px',
               textAlign: 'center'
             }}>
-              Твой первый проект на React с темной темой!
+              Первый проект на React!
             </Text>
           </div>
         </Card>
