@@ -39,6 +39,11 @@ export default defineConfig({
       path: '/feedback',
       component : './Feedback'
     },
+    {
+      name: 'Список студентов',
+      path: '/students',
+      component: './Students'
+    }
   ],
   npmClient: 'npm',
 });

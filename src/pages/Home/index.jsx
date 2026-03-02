@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Typography, Card, Space } from 'antd';
 import { 
+  TeamOutlined,
   HomeOutlined, 
   InfoCircleOutlined,
   CodeOutlined,
@@ -121,6 +122,27 @@ const HomePage = () => {
               }}
             >
               Обратная связь
+            </Button>
+          </div>
+          {/* Третий ряд: Список студентов (на всю ширину) */}
+          <div style={{ 
+            width: '100%',
+            maxWidth: '500px',
+            marginTop: '16px' // Добавляем отступ сверху
+          }}>
+            <Button 
+              type="primary" // Используем primary для выделения
+              size="large"
+              icon={<TeamOutlined />} // Иконка группы студентов
+              href="/students" // Ссылка на страницу студентов
+              style={{ 
+                width: '100%',
+                background: 'transparent', 
+                borderColor: '#ff1837',
+                color: '#fff'
+              }}
+            >
+              Список студентов
             </Button>
           </div>
         </div>
