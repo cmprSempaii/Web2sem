@@ -16,10 +16,13 @@ export default defineConfig({
     title: '@umijs/max',
   },
   routes: [
+    { 
+      path: '/', redirect: '/students' 
+    },
     {
     path: '/login',
     component: './Login',
-    layout: false, // отключаем глобальный layout, чтобы страница была чистой
+    layout: false, 
     },
     {
       path: '/',
@@ -50,7 +53,6 @@ export default defineConfig({
       component: './Students',
       access: 'isAuthenticated', 
     },
-    { path: '/', redirect: '/students' }
   ],
   npmClient: 'npm',
   proxy: {

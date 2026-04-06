@@ -18,8 +18,22 @@ import {
   UserOutlined,
   EditOutlined,
   SearchOutlined,
+  FileExcelOutlined,
+  BarChartOutlined,
 } from '@ant-design/icons';
 import { getStudents, createStudent, updateStudent, deleteStudent } from '@/services/demo/student';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const StudentsPage = () => {
   const [students, setStudents] = useState([]);
@@ -102,6 +116,50 @@ const StudentsPage = () => {
     student.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  // Подготовка данных для графика (агрегация по группам)
+  const prepareChartData = () => {
+    const groups = {};
+    filteredStudents.forEach((student) => {
+      const group = student.group;
+      groups[group] = (groups[group] || 0) + 1;
+    });
+    return Object.keys(groups).map((group) => ({
+      name: group,
+      count: groups[group],
+    }));
+  };
+
+  const chartData = prepareChartData();
+
+  // Экспорт в Excel
+  const exportToExcel = () => {
+    if (filteredStudents.length === 0) {
+      message.warning('Нет данных для экспорта');
+      return;
+    }
+
+    // Преобразование данных: переименование полей, форматирование даты
+    const transformedData = filteredStudents.map((student) => ({
+      'ID': student.id,
+      'Имя студента': student.name,
+      'Группа': student.group,
+      'Дата добавления': student.dateAdded
+        ? new Date(student.dateAdded).toLocaleDateString('ru-RU')
+        : '',
+    }));
+
+    // Создание рабочего листа и книги
+    const worksheet = XLSX.utils.json_to_sheet(transformedData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Студенты');
+
+    // Генерация файла и скачивание
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const dataBlob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(dataBlob, `students_${new Date().toISOString().slice(0, 19)}.xlsx`);
+    message.success('Экспорт завершён');
+  };
+
   const totalCount = filteredStudents.length;
   const groupCount = new Set(filteredStudents.map((s) => s.group)).size;
 
@@ -167,9 +225,21 @@ const StudentsPage = () => {
           <h1 style={{ margin: 0 }}>📚 Список студентов</h1>
         </Col>
         <Col>
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-            Добавить студента
-          </Button>
+          <Space>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleAdd}
+            >
+              Добавить студента
+            </Button>
+            <Button
+              icon={<FileExcelOutlined />}
+              onClick={exportToExcel}
+            >
+              Экспорт в Excel
+            </Button>
+          </Space>
         </Col>
       </Row>
 
@@ -230,6 +300,35 @@ const StudentsPage = () => {
           </Card>
         </Col>
       </Row>
+
+      {/* График (визуализация) */}
+      {chartData.length > 0 && (
+        <Card
+          title={
+            <span>
+              <BarChartOutlined style={{ marginRight: 8 }} />
+              Количество студентов по группам
+            </span>
+          }
+          style={{
+            marginBottom: '24px',
+            borderRadius: '15px',
+            border: 'none',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          }}
+        >
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" fill="#1890ff" name="Студенты" />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+      )}
 
       <Card
         style={{

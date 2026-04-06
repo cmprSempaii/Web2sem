@@ -5,12 +5,29 @@ import {
   HomeOutlined, 
   InfoCircleOutlined,
   CodeOutlined,
-  MailOutlined  // Добавляем иконку для обратной связи
+  MailOutlined,
+  LoginOutlined,
+  LogoutOutlined
 } from '@ant-design/icons';
+import { history, useModel } from '@umijs/max';
 
 const { Title, Text } = Typography;
 
 const HomePage = () => {
+  const { initialState, setInitialState } = useModel('@@initialState');
+  const isAuthenticated = !!initialState?.user;
+  const userName = initialState?.user?.name || '';
+
+  const handleLogin = () => {
+    history.push('/login');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setInitialState({ user: null });
+    history.push('/login');
+  };
+
   return (
     <div style={{ 
       minHeight: '100vh',
@@ -62,7 +79,7 @@ const HomePage = () => {
         {/* Меняем расположение кнопок */}
         <div style={{ 
           display: 'flex', 
-          flexDirection: 'column',  // Вертикальное расположение
+          flexDirection: 'column',
           gap: '12px', 
           alignItems: 'center'
         }}>
@@ -104,7 +121,7 @@ const HomePage = () => {
             </Button>
           </div>
 
-          {/* Второй ряд: Обратная связь (на всю ширину) */}
+          {/* Второй ряд: Обратная связь */}
           <div style={{ 
             width: '100%',
             maxWidth: '500px'
@@ -124,17 +141,18 @@ const HomePage = () => {
               Обратная связь
             </Button>
           </div>
-          {/* Третий ряд: Список студентов (на всю ширину) */}
+
+          {/* Третий ряд: Список студентов */}
           <div style={{ 
             width: '100%',
             maxWidth: '500px',
-            marginTop: '16px' // Добавляем отступ сверху
+            marginTop: '16px'
           }}>
             <Button 
-              type="primary" // Используем primary для выделения
+              type="primary"
               size="large"
-              icon={<TeamOutlined />} // Иконка группы студентов
-              href="/students" // Ссылка на страницу студентов
+              icon={<TeamOutlined />}
+              href="/students"
               style={{ 
                 width: '100%',
                 background: 'transparent', 
@@ -144,6 +162,50 @@ const HomePage = () => {
             >
               Список студентов
             </Button>
+          </div>
+
+          {/* Четвёртый ряд: Вход / Выход (в зависимости от авторизации) */}
+          <div style={{ 
+            width: '100%',
+            maxWidth: '500px',
+            marginTop: '16px'
+          }}>
+            {!isAuthenticated ? (
+              <Button 
+                type="default"
+                size="large"
+                icon={<LoginOutlined />}
+                onClick={handleLogin}
+                style={{ 
+                  width: '100%',
+                  background: 'transparent',
+                  color: '#fff',
+                  borderColor: '#ff1837'
+                }}
+              >
+                Войти в систему
+              </Button>
+            ) : (
+              <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                <div style={{ textAlign: 'center', color: '#ccc', marginBottom: '8px' }}>
+                  Вы вошли как <strong style={{ color: '#ff1837' }}>{userName}</strong>
+                </div>
+                <Button 
+                  danger
+                  size="large"
+                  icon={<LogoutOutlined />}
+                  onClick={handleLogout}
+                  style={{ 
+                    width: '100%',
+                    background: 'transparent',
+                    borderColor: '#ff1837',
+                    color: '#ff1837'
+                  }}
+                >
+                  Выйти
+                </Button>
+              </Space>
+            )}
           </div>
         </div>
       </div>
