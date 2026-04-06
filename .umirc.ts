@@ -17,6 +17,11 @@ export default defineConfig({
   },
   routes: [
     {
+    path: '/login',
+    component: './Login',
+    layout: false, // отключаем глобальный layout, чтобы страница была чистой
+    },
+    {
       path: '/',
       redirect: '/home',
     },
@@ -42,8 +47,10 @@ export default defineConfig({
     {
       name: 'Список студентов',
       path: '/students',
-      component: './Students'
-    }
+      component: './Students',
+      access: 'isAuthenticated', 
+    },
+    { path: '/', redirect: '/students' }
   ],
   npmClient: 'npm',
   proxy: {
