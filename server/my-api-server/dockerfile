@@ -1,0 +1,15 @@
+FROM node:18-alpine
+WORKDIR /app
+
+# Копируем файлы с зависимостями
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Копируем весь код приложения
+COPY . .
+
+# Порт, который слушает сервер (указан в server.js)
+EXPOSE 5000
+
+# Запуск сервера
+CMD ["node", "server.js"]

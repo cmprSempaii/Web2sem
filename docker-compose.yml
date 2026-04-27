@@ -1,0 +1,26 @@
+services:
+  # Серверное API на Node.js
+  server:
+    build: ./server/my-api-server   # путь к папке с Dockerfile сервера
+    container_name: student-api
+    ports:
+      - "5000:5000"                 # проброс порта для внешнего доступа (опционально)
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Клиентское SPA на Nginx
+  client:
+    build: .                         # собираем из текущей папки (там лежит Dockerfile клиента)
+    container_name: student-client
+    ports:
+      - "80:80"                      # веб-интерфейс будет доступен на localhost:80
+    depends_on:
+      - server
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge

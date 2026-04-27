@@ -12,6 +12,7 @@ export default defineConfig({
   model: {},
   initialState: {},
   request: {},
+  hash: true,  
   layout: {
     title: '@umijs/max',
   },
